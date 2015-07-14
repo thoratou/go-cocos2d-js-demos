@@ -1,7 +1,6 @@
 package test
 
 import (
-	"github.com/gopherjs/gopherjs/js"
 	"github.com/thoratou/go-cocos2d-js/cc"
 )
 
@@ -29,7 +28,7 @@ func NewTestScene(controller *TestController) *TestScene {
 	return testScene
 }
 
-func (t *TestScene) OnMainMenuCallback(_ *js.Object) {
+func (t *TestScene) OnMainMenuCallback(_ cc.Node) {
 	cc.Log("begin OnMainMenuCallback")
 	scene := cc.NewScene()
 	layer := t.controller.Clone().Layer

@@ -106,10 +106,10 @@ func NewTestController(testNames []Test, resources map[string]interface{}) *Test
 	return testController
 }
 
-func (t *TestController) OnMenuCallback(sender *js.Object) {
+func (t *TestController) OnMenuCallback(sender cc.Node) {
 	cc.Log("called OnMenuCallback")
 	t.yOffset = t.itemMenu.GetPositionY()
-	idx := cc.NewNodeJs(sender).GetLocalZOrder() - 10000
+	idx := sender.GetLocalZOrder() - 10000
 
 	t.autoTestCurrentTestName = t.testNames[idx].Title
 	cc.Log("Load scene:", t.autoTestCurrentTestName)
@@ -125,7 +125,7 @@ func (t *TestController) OnMenuCallback(sender *js.Object) {
 	})
 }
 
-func (t *TestController) OnToggleAutoTest(_ *js.Object) {
+func (t *TestController) OnToggleAutoTest(_ cc.Node) {
 	cc.Log("called OnToggleAutoTest")
 	t.autoTestEnabled = !t.autoTestEnabled
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gopherjs/gopherjs/js"
 	"github.com/thoratou/go-cocos2d-js/cc"
 )
 
@@ -28,7 +29,7 @@ func NewHelloWorldLayer() cc.Layer {
 
 	closeNormal := resouces["CloseNormal_png"].(string)
 	closeSelected := resouces["CloseSelected_png"].(string)
-	closeCallback := func() {
+	closeCallback := func(_ *js.Object) {
 		cc.Log("Menu is clicked!")
 	}
 

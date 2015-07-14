@@ -20,6 +20,7 @@ type TestController struct {
 	curPos                  cc.Point
 	yOffset                 int
 	testNames               []Test
+	resources               map[string]interface{}
 }
 
 func NewTestController(testNames []Test, resources map[string]interface{}) *TestController {
@@ -36,6 +37,7 @@ func NewTestController(testNames []Test, resources map[string]interface{}) *Test
 		curPos:                  cc.NewPoint(0, 0),
 		yOffset:                 0,
 		testNames:               testNames,
+		resources:               resources,
 	}
 
 	//OnEnter
@@ -84,7 +86,16 @@ func NewTestController(testNames []Test, resources map[string]interface{}) *Test
 	// add menu items for tests
 	testController.itemMenu = cc.NewMenu()
 
-	//TODO: Add items for tests
+	//Add items for tests
+	for i, testCase := range testNames {
+		label := cc.NewLabelTTF(testCase.Title, "Arial", 24)
+		menuItem := cc.NewMenuItemLabel(label, testController.OnMenuCallback, testController.Layer)
+		testController.itemMenu.AddChildWithOrder(menuItem, i+10000)
+		menuItem.SetPositionX(winSize.Width() / 2)
+		menuItem.SetPositionY(winSize.Height() - (i+1)*lineSpace)
+		menuItem.SetEnabled(true)
+	}
+
 	testController.itemMenu.SetWidth(winSize.Width())
 	testController.itemMenu.SetHeight(1 * lineSpace)
 	testController.itemMenu.SetPositionX(testController.curPos.X())
@@ -95,22 +106,30 @@ func NewTestController(testNames []Test, resources map[string]interface{}) *Test
 	return testController
 }
 
-func (t *TestController) OnMenuCallback(sender cc.Node) {
+func (t *TestController) OnMenuCallback(sender *js.Object) {
+	cc.Log("called OnMenuCallback")
 	t.yOffset = t.itemMenu.GetPositionY()
-	idx := sender.GetLocalZOrder() - 10000
+	idx := cc.NewNodeJs(sender).GetLocalZOrder() - 10000
 
 	t.autoTestCurrentTestName = t.testNames[idx].Title
+	cc.Log("Load scene:", t.autoTestCurrentTestName)
 
 	testCase := t.testNames[idx]
 	res := testCase.Resource
 	cc.LoaderScene().Preload(res, func() {
 		scene := testCase.TestCase(t)
 		if scene != nil {
+			cc.Log("Run scene:", t.autoTestCurrentTestName)
 			scene.RunThisTest()
 		}
 	})
 }
 
-func (t *TestController) OnToggleAutoTest(_ cc.Node) {
+func (t *TestController) OnToggleAutoTest(_ *js.Object) {
+	cc.Log("called OnToggleAutoTest")
 	t.autoTestEnabled = !t.autoTestEnabled
+}
+
+func (t *TestController) Clone() *TestController {
+	return NewTestController(t.testNames, t.resources)
 }

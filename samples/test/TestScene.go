@@ -12,30 +12,27 @@ type TestScene struct {
 }
 
 func NewTestScene(controller *TestController) *TestScene {
-	scene := cc.NewScene()
-
 	testScene := &TestScene{
-		Scene:      scene,
+		Scene:      cc.NewScene(),
 		controller: controller,
 	}
 
 	label := cc.NewLabelTTF("Main Menu", "Arial", 20)
-	menuItem := cc.NewMenuItemLabel(label, testScene.onMainMenuCallback, scene)
+	menuItem := cc.NewMenuItemLabelAllArgs(label, testScene.OnMainMenuCallback, testScene.Scene)
 	menuItem.SetPosition(cc.NewPoint(cc.WinSize().Width()-50, 25))
 
 	menu := cc.NewMenu(menuItem)
 	menu.SetPosition(cc.NewPoint(0, 0))
 
-	if js.Global.Get("sideIndexBar") != js.Undefined {
-		scene.AddChildWithOrder(menu, 1)
-	}
+	testScene.Scene.AddChildWithOrder(menu, 1)
 
 	return testScene
 }
 
-func (t *TestScene) onMainMenuCallback() {
+func (t *TestScene) OnMainMenuCallback(_ *js.Object) {
+	cc.Log("begin OnMainMenuCallback")
 	scene := cc.NewScene()
-	layer := t.controller.Layer
+	layer := t.controller.Clone().Layer
 	scene.AddChild(layer)
 	//TODO transition progress
 	cc.Director().RunScene(scene)
